@@ -8,6 +8,7 @@ client = test.TestClient(app)
 def test_list_cars():
     response = client.get('/')
     assert response.status_code == 200
+    breakpoint()
 
     json_resp = response.json()
     car_count = len(cars)

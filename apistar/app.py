@@ -1,7 +1,7 @@
 import json
 from typing import List
 
-from apistar import App, Route, types, validators
+from apistar import App, Route, types, validators # Validators -
 from apistar.http import JSONResponse
 
 
@@ -13,10 +13,11 @@ def _load_cars_data():
         return {car["id"]: car for car in cars}
 
 
-cars = _load_cars_data()
-VALID_MANUFACTURERS = set([car["manufacturer"]
+cars = _load_cars_data() # data structure - lowercase
+VALID_MANUFACTURERS = set([car["manufacturer"] # constant
                           for car in cars.values()])
-CAR_NOT_FOUND = 'Car not found'
+CAR_NOT_FOUND = 'Car not found'  # constant
+
 
 # definition
 
@@ -24,7 +25,7 @@ CAR_NOT_FOUND = 'Car not found'
 class Car(types.Type):
     id = validators.Integer(allow_null=True)  # assign in POST
     manufacturer = validators.String(enum=list(VALID_MANUFACTURERS))
-    model = validators.String(max_length=50)
+    model = validators.String(max_length=50) #car model length name <50 characters
     year = validators.Integer(minimum=1900, maximum=2050)
     vin = validators.String(max_length=50, default='')
 
@@ -33,10 +34,12 @@ class Car(types.Type):
 
 def list_cars() -> List[Car]:
     return [Car(car[1]) for car in sorted(cars.items())]
+ #Car(car[1]) is a serialization
+
 
 
 def create_car(car: Car) -> JSONResponse:
-    car_id = max(cars.keys())+1
+    car_id = len(cars) + 1
     car.id = car_id
     cars[car_id] = car
     return JSONResponse(Car(car), status_code=201)
@@ -71,11 +74,11 @@ def delete_car(car_id: int) -> JSONResponse:
 
 
 routes = [
-    Route('/', method='GET', handler=list_cars),
-    Route('/', method='POST', handler=create_car),
-    Route('/{car_id}/', method='GET', handler=get_car),
-    Route('/{car_id}/', method='PUT', handler=update_car),
-    Route('/{car_id}/', method='DELETE', handler=delete_car),
+    Route('/', method='GET', handler=list_cars), #read all the cars
+    Route('/', method='POST', handler=create_car), #create
+    Route('/{car_id}/', method='GET', handler=get_car), #get individual cars
+    Route('/{car_id}/', method='PUT', handler=update_car), #update
+    Route('/{car_id}/', method='DELETE', handler=delete_car), #delete
 ]
 
 app = App(routes=routes)
